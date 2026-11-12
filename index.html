@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Transparansi Kas RT 02 / RW 06 Kelurahan Isola</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.35); opacity: 0.55; }
+        }
+        .animate-pulse-dot {
+            animation: pulse-dot 2s infinite ease-in-out;
+        }
+        @keyframes flash-highlight {
+            0% { background-color: rgba(16, 185, 129, 0.18); }
+            100% { background-color: transparent; }
+        }
+        .flash-update {
+            animation: flash-highlight 1.4s ease-out;
+        }
+        @media print {
+            header button, #filterControlBar, footer button, #toastNotification {
+                display: none !important;
+            }
+            body {
+                background-color: #ffffff !important;
+            }
+            main {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
+
+    <!-- =================================================================== -->
+    <!-- MINIMALIST NAVBAR (PUBLIC VIEW - NO EXPOSED SHEET URL INPUT)        -->
+    <!-- =================================================================== -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+            <!-- Brand Identity -->
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm shrink-0">
+                    <i class="fa-solid fa-wallet text-lg"></i>
+                </div>
+                <div class="truncate">
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-extrabold text-slate-900 truncate">Portal Transparansi Kas RT 02 / RW 06 — Kelurahan Isola</h1>
+                        <span id="liveBadgePill" class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse-dot"></span>
+                            <span id="syncStatusPillText">Live Terhubung ke Google Sheet</span>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 truncate">
+                        Dana Jaminan Sosial (Jamsos) & Operasional Sampah Satu Pintu • <span id="headerSyncTime" class="font-medium text-emerald-700">Sinkron Real-Time</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 shrink-0">
+                <!-- Quick Refresh Button -->
+                <button
+                    onclick="triggerSilentOrQuickRefresh()"
+                    id="btnQuickRefresh"
+                    title="Tarik Ulang Data Terbaru dari Google Sheet"
+                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 transition"
+                >
+                    <i id="refreshIcon" class="fa-solid fa-rotate text-emerald-600"></i>
+                    <span class="hidden sm:inline">Refresh</span>
+                </button>
+
+                <!-- Primary Record Transaction Button -->
+                <button
+                    onclick="openAddTransactionModal()"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow transition"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Catat Kas</span>
+                </button>
+
+                <!-- Subtle Admin Settings Gear Icon (Hides Google Sheet Connector from Public) -->
+                <button
+                    onclick="openAdminSettingsModal()"
+                    title="Pengaturan Sumber Data & Google Sheet (Admin)"
+                    class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition relative"
+                >
+                    <i class="fa-solid fa-gear text-sm"></i>
+                    <span id="sheetConnectedDot" class="w-2 h-2 rounded-full bg-emerald-500 absolute top-1.5 right-1.5 ring-2 ring-white"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =================================================================== -->
+    <!-- MAIN PUBLIC CONTENT (MAX-W-5XL CLEAN FINANCIAL LAYOUT)              -->
+    <!-- =================================================================== -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- =============================================================== -->
+        <!-- SECTION 1: LIVE SALDO PUBLIK (HERO + 2 PROGRAM CARDS)           -->
+        <!-- =============================================================== -->
+        <section class="space-y-4">
+            <!-- Main Consolidated Balance Card -->
+            <div id="heroBalanceCard" class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-7 shadow-lg border border-slate-800 relative overflow-hidden">
+                <div class="absolute -right-12 -top-12 w-52 h-52 rounded-full bg-emerald-500/10 blur-2xl pointer-events-none"></div>
+                <div class="absolute -left-12 -bottom-12 w-44 h-44 rounded-full bg-teal-500/10 blur-2xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                    <div>
+                        <div class="inline-flex flex-wrap items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] font-semibold text-emerald-300 mb-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-dot"></span>
+                            <span id="heroSourceStatusText">Live Terhubung ke Google Sheet RT 02</span>
+                            <span class="text-slate-400">•</span>
+                            <span id="lastUpdateLabel" class="text-slate-200 font-normal">Sinkron Otomatis</span>
+                        </div>
+                        <div class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Total Saldo Kas Tersedia</div>
+                        <div id="kpiTotalKonsolidasi" class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mt-1">
+                            Rp 6.787.000
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 mt-2.5">
+                            <span>Gabungan <strong class="text-white">Kas Jamsos</strong> & <strong class="text-white">Kas Sampah</strong></span>
+                            <span class="text-slate-500">•</span>
+                            <span class="inline-flex items-center gap-1 text-emerald-300 font-medium">
+                                <i class="fa-solid fa-users text-[11px]"></i>
+                                <span id="kpiPartisipasiWarga">Partisipasi Warga: 66,7% (124 dari 186 KK)</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Total Cashflow & Adequacy Summary Pills -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 lg:min-w-[410px]">
+                        <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3.5">
+                            <div class="flex items-center gap-1.5 text-[11px] text-emerald-300 font-semibold">
+                                <span class="w-5 h-5 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-[10px]">
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                </span>
+                                <span>Total Kas Masuk</span>
+                            </div>
+                            <div id="kpiTotalMasukAll" class="text-sm sm:text-base font-extrabold text-white mt-1.5">
+                                Rp 14.262.000
+                            </div>
+                        </div>
+                        <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3.5">
+                            <div class="flex items-center gap-1.5 text-[11px] text-rose-300 font-semibold">
+                                <span class="w-5 h-5 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400 text-[10px]">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                </span>
+                                <span>Total Kas Keluar</span>
+                            </div>
+                            <div id="kpiTotalKeluarAll" class="text-sm sm:text-base font-extrabold text-white mt-1.5">
+                                Rp 7.475.000
+                            </div>
+                        </div>
+                        <div class="col-span-2 sm:col-span-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3.5">
+                            <div class="flex items-center gap-1.5 text-[11px] text-sky-300 font-semibold">
+                                <span class="w-5 h-5 rounded-lg bg-sky-500/20 flex items-center justify-center text-sky-400 text-[10px]">
+                                    <i class="fa-solid fa-shield-heart"></i>
+                                </span>
+                                <span>Rasio Sisa Kas</span>
+                            </div>
+                            <div id="kpiRasioKecukupan" class="text-sm sm:text-base font-extrabold text-emerald-300 mt-1.5">
+                                47,6% Surplus
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Minimalist Proportion Bar -->
+                <div class="relative z-10 mt-6 pt-4 border-t border-white/10">
+                    <div class="flex items-center justify-between text-[11px] text-slate-300 mb-1.5">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-sm bg-emerald-400 inline-block"></span>
+                            <span>Porsi Kas Jamsos (<strong id="propJamsosPct">56%</strong>)</span>
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span>Porsi Kas Sampah (<strong id="propSampahPct">44%</strong>)</span>
+                            <span class="w-2.5 h-2.5 rounded-sm bg-sky-400 inline-block"></span>
+                        </span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden flex">
+                        <div id="propJamsosBar" class="bg-emerald-400 h-full transition-all duration-500" style="width: 55.8%"></div>
+                        <div id="propSampahBar" class="bg-sky-400 h-full transition-all duration-500" style="width: 44.2%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 Clean Program Balance Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Card 1: Kas Jamsos -->
+                <div id="cardSaldoJamsos" onclick="setQuickChipFilter('Jamsos')" class="cursor-pointer bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition group">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition">
+                                <i class="fa-solid fa-hand-holding-heart text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Program Santunan Warga</span>
+                                <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Kas Jaminan Sosial (Jamsos)</h2>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400 group-hover:text-emerald-600 transition flex items-center gap-1">
+                            <span>Filter Mutasi</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </span>
+                    </div>
+
+                    <div class="mt-4 flex items-baseline justify-between gap-2">
+                        <div>
+                            <div class="text-[11px] text-slate-400 font-medium">Saldo Tersedia Jamsos</div>
+                            <div id="kpiSaldoJamsos" class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                Rp 3.787.000
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 text-right">
+                            Iuran Rp13.000/KK • 124 KK Aktif
+                        </span>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">Total Masuk</span>
+                            <strong id="kpiMasukJamsos" class="text-emerald-600 font-bold">+ Rp 4.812.000</strong>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-slate-400 block text-[11px]">Total Keluar</span>
+                            <strong id="kpiKeluarJamsos" class="text-rose-600 font-bold">- Rp 1.025.000</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Kas Sampah -->
+                <div id="cardSaldoSampah" onclick="setQuickChipFilter('Sampah')" class="cursor-pointer bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-sky-300 transition group">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center shrink-0 group-hover:bg-sky-600 group-hover:text-white transition">
+                                <i class="fa-solid fa-truck-pickup text-lg"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700">Operasional Satu Pintu</span>
+                                <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Kas Operasional Sampah</h2>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400 group-hover:text-sky-600 transition flex items-center gap-1">
+                            <span>Filter Mutasi</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </span>
+                    </div>
+
+                    <div class="mt-4 flex items-baseline justify-between gap-2">
+                        <div>
+                            <div class="text-[11px] text-slate-400 font-medium">Saldo Tersedia Sampah</div>
+                            <div id="kpiSaldoSampah" class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                Rp 3.000.000
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200 text-right">
+                            Armada, LDH & Motah
+                        </span>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">Total Masuk</span>
+                            <strong id="kpiMasukSampah" class="text-emerald-600 font-bold">+ Rp 9.450.000</strong>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-slate-400 block text-[11px]">Total Keluar</span>
+                            <strong id="kpiKeluarSampah" class="text-rose-600 font-bold">- Rp 6.450.000</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- SECTION 2: BUKU KAS MODERN (MUTASI & PENCATATAN TRANSAKSI)      -->
+        <!-- =============================================================== -->
+        <section id="bukuKasSection" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+            <!-- Section Header -->
+            <div class="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Buku Kas & Mutasi Transaksi</h2>
+                        <span id="badgeTotalTxCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            12 Transaksi
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        Sinkron otomatis dengan tab <code class="font-mono text-slate-700">Buku_Kas</code> Google Sheet RT 02. Klik item mutasi atau nomor bukti untuk melihat nota verifikasi.
+                    </p>
+                </div>
+
+                <!-- View Mode Toggle & Export -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- View Mode Switcher: Modern List vs Clean Table -->
+                    <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold">
+                        <button
+                            onclick="setBukuKasViewMode('list')"
+                            id="btnViewList"
+                            class="px-2.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center gap-1.5"
+                        >
+                            <i class="fa-solid fa-list-ul text-emerald-600"></i>
+                            <span>Tampilan Mutasi</span>
+                        </button>
+                        <button
+                            onclick="setBukuKasViewMode('table')"
+                            id="btnViewTable"
+                            class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5"
+                        >
+                            <i class="fa-solid fa-table"></i>
+                            <span>Tabel Ringkas</span>
+                        </button>
+                    </div>
+
+                    <button
+                        onclick="exportBukuKasCSV()"
+                        title="Unduh Buku Kas dalam format CSV"
+                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
+                    >
+                        <i class="fa-solid fa-download text-slate-500"></i>
+                        <span class="hidden sm:inline">Unduh CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Single-Row Filter Bar: Unified Pill Tabs + Quick Search -->
+            <div id="filterControlBar" class="px-5 sm:px-6 py-4 bg-slate-50/70 border-b border-slate-100 space-y-3">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <!-- Unified Filter Pills: Semua Mutasi, Kas Jamsos, Kas Sampah, Uang Masuk, Uang Keluar -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 lg:pb-0">
+                        <button
+                            onclick="setQuickChipFilter('ALL')"
+                            id="chipFilter-ALL"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-sm transition whitespace-nowrap"
+                        >
+                            Semua Mutasi
+                        </button>
+                        <button
+                            onclick="setQuickChipFilter('Jamsos')"
+                            id="chipFilter-Jamsos"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition whitespace-nowrap flex items-center gap-1.5"
+                        >
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Kas Jamsos</span>
+                        </button>
+                        <button
+                            onclick="setQuickChipFilter('Sampah')"
+                            id="chipFilter-Sampah"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition whitespace-nowrap flex items-center gap-1.5"
+                        >
+                            <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                            <span>Kas Sampah</span>
+                        </button>
+                        <button
+                            onclick="setQuickChipFilter('Masuk')"
+                            id="chipFilter-Masuk"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition whitespace-nowrap flex items-center gap-1.5"
+                        >
+                            <i class="fa-solid fa-arrow-down text-[10px] text-emerald-600"></i>
+                            <span>Uang Masuk</span>
+                        </button>
+                        <button
+                            onclick="setQuickChipFilter('Keluar')"
+                            id="chipFilter-Keluar"
+                            class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition whitespace-nowrap flex items-center gap-1.5"
+                        >
+                            <i class="fa-solid fa-arrow-up text-[10px] text-rose-600"></i>
+                            <span>Uang Keluar</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Search Input -->
+                    <div class="relative w-full lg:w-72">
+                        <input
+                            type="text"
+                            id="searchBukuKas"
+                            oninput="renderBukuKas()"
+                            placeholder="Cari uraian, pos anggaran, PIC, no bukti..."
+                            class="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-8 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                        <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-3 top-2.5 text-xs"></i>
+                        <button
+                            id="btnClearSearch"
+                            onclick="clearSearchBukuKas()"
+                            class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs"
+                        >
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Filter Summary Strip -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/60 text-xs">
+                    <span id="filteredCountText" class="text-slate-500 font-medium">Menampilkan 12 transaksi</span>
+                    <div class="flex flex-wrap items-center gap-3 sm:gap-5">
+                        <span class="text-slate-500">Total Masuk: <strong id="filteredMasukSum" class="text-emerald-600">+ Rp 0</strong></span>
+                        <span class="text-slate-500">Total Keluar: <strong id="filteredKeluarSum" class="text-rose-600">- Rp 0</strong></span>
+                        <span class="text-slate-600 font-semibold">Selisih Bersih: <strong id="filteredNetSum" class="text-slate-900">Rp 0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 1: MODERN MUTATION LIST (DEFAULT - CLEAN BANKING STYLE) -->
+            <div id="bukuKasListView" class="divide-y divide-slate-100">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- VIEW 2: CLEAN TABLE (OPTIONAL TOGGLE) -->
+            <div id="bukuKasTableView" class="hidden overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 font-bold text-[11px] uppercase tracking-wider">
+                            <th class="py-3.5 px-4 sm:px-6">Tanggal & ID</th>
+                            <th class="py-3.5 px-4">Uraian, Pos Anggaran & PIC</th>
+                            <th class="py-3.5 px-4">No. Bukti</th>
+                            <th class="py-3.5 px-4 text-right">Nominal Mutasi</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-right">Saldo Berjalan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bukuKasTableBody" class="divide-y divide-slate-100">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- CLEAN FOOTER WITH PDF PRINT FOR VALIDATION & SUBTLE ADMIN LINK      -->
+    <!-- =================================================================== -->
+    <footer class="bg-white border-t border-slate-200/80 mt-8 py-5 px-4 text-xs text-slate-500">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="font-bold text-slate-700">Pengurus RT 02 / RW 06 Kelurahan Isola</span>
+                <span>•</span>
+                <span>Portal Transparansi Kas Warga (Siap Validasi)</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button
+                    onclick="window.print()"
+                    class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition inline-flex items-center gap-1.5"
+                >
+                    <i class="fa-solid fa-print text-emerald-600"></i>
+                    <span>Cetak / Simpan PDF Laporan Kas</span>
+                </button>
+                <button onclick="openAdminSettingsModal()" class="text-slate-400 hover:text-slate-700 transition inline-flex items-center gap-1.5 font-medium">
+                    <i class="fa-solid fa-gear text-[11px]"></i>
+                    <span>Sumber Data</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =================================================================== -->
+    <!-- TOAST NOTIFICATION (NON-INTRUSIVE FEEDBACK)                         -->
+    <!-- =================================================================== -->
+    <div id="toastNotification" class="fixed bottom-5 right-5 z-50 hidden max-w-sm bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 items-center gap-3 text-xs">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <div id="toastMessage" class="font-medium leading-snug">Data berhasil disimpan.</div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 1: CATAT TRANSAKSI KAS BARU (SIMPLE & FAST RECORDING)         -->
+    <!-- =================================================================== -->
+    <div id="addTxModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-extrabold">Catat Transaksi Buku Kas</h3>
+                    <p class="text-[11px] text-slate-400">Otomatis menghitung ulang Live Saldo & menyiapkan baris Google Sheet</p>
+                </div>
+                <button onclick="closeAddTransactionModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAddTransaction(event)" class="p-6 space-y-4 text-xs sm:text-sm">
+                <!-- Jenis Mutasi Selector (Visual Segmented Control) -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Jenis Arus Kas</label>
+                    <input type="hidden" id="newTxJenis" value="Masuk">
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button
+                            type="button"
+                            id="btnSelectMasuk"
+                            onclick="selectNewTxJenis('Masuk')"
+                            class="py-2.5 px-3 rounded-xl font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-2 transition"
+                        >
+                            <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i>
+                            <span>Uang Masuk (+)</span>
+                        </button>
+                        <button
+                            type="button"
+                            id="btnSelectKeluar"
+                            onclick="selectNewTxJenis('Keluar')"
+                            class="py-2.5 px-3 rounded-xl font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition"
+                        >
+                            <i class="fa-solid fa-circle-arrow-up text-rose-500"></i>
+                            <span>Uang Keluar (-)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Program & Tanggal -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Pos Program Kas</label>
+                        <select id="newTxProgram" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="Jamsos">Kas Jaminan Sosial (Jamsos)</option>
+                            <option value="Sampah">Kas Pengelolaan Sampah</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Tanggal Transaksi</label>
+                        <input type="date" id="newTxTanggal" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <!-- Nominal with Automatic Thousand Separator -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Nominal Transaksi (Rp)</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-2.5 font-extrabold text-slate-400">Rp</span>
+                        <input
+                            type="text"
+                            id="newTxNominalDisplay"
+                            oninput="formatNominalInput(this)"
+                            required
+                            placeholder="Contoh: 250.000"
+                            inputmode="numeric"
+                            class="w-full rounded-xl border border-slate-300 pl-10 pr-4 py-2.5 text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                    </div>
+                </div>
+
+                <!-- Uraian & Kategori -->
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Uraian / Keterangan Transaksi</label>
+                    <input
+                        type="text"
+                        id="newTxUraian"
+                        required
+                        placeholder="Contoh: Kolektif iuran warga atau Santunan rawat inap warga"
+                        class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Kategori / Pos</label>
+                        <input
+                            type="text"
+                            id="newTxPos"
+                            list="posSuggestions"
+                            required
+                            placeholder="Pilih / ketik..."
+                            class="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        >
+                        <datalist id="posSuggestions">
+                            <option value="Iuran Jamsos Warga">
+                            <option value="Iuran Sampah Warga & Usaha">
+                            <option value="Santunan Kematian">
+                            <option value="Santunan Sakit & Melahirkan">
+                            <option value="Cicilan Mobil Operasional">
+                            <option value="Setoran Pihak LDH">
+                            <option value="Pembuangan ke Motah">
+                            <option value="Insentif Pengurus Inti RT">
+                            <option value="Subsidi Silang Berpagu">
+                        </datalist>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">PIC / Petugas</label>
+                        <input type="text" id="newTxPIC" value="Bendahara RT" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">No. Bukti / Nota</label>
+                        <input type="text" id="newTxBukti" required class="w-full rounded-xl border border-slate-300 px-3 py-2 font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeAddTransactionModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Simpan ke Buku Kas</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 2: DETAIL TRANSAKSI & BUKTI KWITANSI                          -->
+    <!-- =================================================================== -->
+    <div id="voucherModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-emerald-400 font-bold">Rincian Bukti Kas RT 02</span>
+                    <h3 class="text-base font-extrabold" id="modalVoucherTitle">Detail Transaksi</h3>
+                </div>
+                <button onclick="closeVoucherModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-xs sm:text-sm" id="modalVoucherBody"></div>
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+                <div id="modalVoucherLeftActions"></div>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyTransactionRowForSheet()" id="btnCopyRowSheet" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Salin Baris ke Sheet</span>
+                    </button>
+                    <button onclick="closeVoucherModal()" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 3: HIDDEN ADMIN CONTROL PANEL (GOOGLE SHEET CONNECTOR)        -->
+    <!-- =================================================================== -->
+    <div id="adminSettingsModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm sm:text-base font-extrabold">Pengaturan Sumber Data & Google Sheet</h3>
+                            <span id="detectedUrlTypeBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                                Mode Hybrid
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Panel khusus pengurus untuk menautkan atau menyinkronkan Google Sheet</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminSettingsModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-5 text-xs sm:text-sm max-h-[80vh] overflow-y-auto custom-scrollbar">
+                <!-- URL Input -->
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tautan Google Sheet (Mendukung Link "Share Anyone" & "Publish to Web"):
+                        </label>
+                        <div class="flex gap-2">
+                            <input
+                                type="text"
+                                id="sheetUrlInput"
+                                oninput="inspectUrlRealtime(this.value)"
+                                placeholder="https://docs.google.com/spreadsheets/d/.../edit#gid=0 atau .../2PACX-.../pub?output=csv"
+                                class="flex-1 rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            >
+                            <button onclick="clearUrlInput()" type="button" class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-500 text-xs font-semibold">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+                        <div class="sm:col-span-5">
+                            <label class="block text-[11px] font-bold text-slate-500 mb-1">Pilih Preset Tab / GID:</label>
+                            <select id="sheetTabPreset" onchange="applyTabPreset(this.value)" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="">Otomatis (Sesuai Link)</option>
+                                <option value="gid:0">Tab Pertama (gid=0)</option>
+                                <option value="Buku_Kas_Utama">Buku_Kas_Utama</option>
+                                <option value="Buku_Kas">Buku_Kas</option>
+                                <option value="Ringkasan_RealTime">Ringkasan_RealTime</option>
+                                <option value="Rekap_Dashboard">Rekap_Dashboard</option>
+                                <option value="Sheet1">Sheet1</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[11px] font-bold text-slate-500 mb-1">Atau Ketik Tab/GID:</label>
+                            <input
+                                type="text"
+                                id="customTabOrGidInput"
+                                placeholder="Nama Tab / GID"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            >
+                        </div>
+                        <div class="sm:col-span-4">
+                            <button
+                                onclick="connectAndReadGoogleSheet()"
+                                id="btnConnectMain"
+                                class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-2"
+                            >
+                                <i id="connectBtnIcon" class="fa-solid fa-bolt"></i>
+                                <span>Hubungkan & Sinkronkan</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnostic Status Box -->
+                <div class="bg-slate-950 text-slate-200 rounded-2xl p-4 border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span>Log Status Sinkronisasi:</span>
+                        </span>
+                        <span id="lastSyncTimestamp" class="text-slate-400 font-mono">Belum disinkronkan</span>
+                    </div>
+                    <div id="diagnosticLogBox" class="font-mono text-[11px] text-slate-300 space-y-1 max-h-28 overflow-y-auto custom-scrollbar">
+                        <div class="text-slate-400">• Tempel link Google Sheet di atas lalu klik "Hubungkan & Sinkronkan".</div>
+                    </div>
+                </div>
+
+                <!-- Alternative Manual Paste / Upload CSV / Reset -->
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">Alternatif Impor & Cadangan Data</div>
+                            <p class="text-[11px] text-slate-500">Gunakan jika ingin menempel sel langsung dari Google Sheet (Ctrl+V) atau unggah file CSV.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="toggleManualPasteArea()" type="button" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs transition">
+                                <i class="fa-solid fa-paste mr-1"></i>Paste Sel Sheet (Ctrl+V)
+                            </button>
+                            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold text-xs transition">
+                                <i class="fa-solid fa-file-csv text-emerald-600 mr-1"></i>Upload CSV
+                                <input type="file" accept=".csv,.tsv,.txt" onchange="handleLocalCSVUpload(event)" class="hidden">
+                            </label>
+                            <button onclick="resetToDefaultSheetData()" type="button" class="px-3 py-1.5 rounded-xl text-rose-600 hover:bg-rose-50 font-semibold text-xs transition">
+                                Reset Default
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Paste Area -->
+                    <div id="manualPasteContainer" class="hidden pt-2 border-t border-slate-200 space-y-2">
+                        <textarea
+                            id="directPasteTextarea"
+                            rows="4"
+                            placeholder="Salin (Ctrl+C) tabel dari Google Sheet, lalu tempel (Ctrl+V) di sini..."
+                            class="w-full rounded-xl border border-slate-300 p-2.5 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        ></textarea>
+                        <div class="flex justify-end">
+                            <button onclick="processDirectPastedText()" type="button" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
+                                Terapkan Data Paste
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optional Accordion: Preview Raw Sheet (For Admin Verification Only) -->
+                <details class="group bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                    <summary class="px-4 py-3 cursor-pointer select-none flex items-center justify-between text-xs font-bold text-slate-700 hover:bg-slate-50">
+                        <span class="flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-emerald-600"></i>
+                            <span>Intip Isi Mentah Google Sheet (Khusus Pemeriksaan Admin)</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 border-t border-slate-200 space-y-3 bg-slate-50/50">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <div id="mirrorSheetTabsContainer" class="flex flex-wrap items-center gap-1.5"></div>
+                            <span id="mirrorDimensionsText" class="text-[11px] text-slate-400 font-mono"></span>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl max-h-60 bg-white">
+                            <table class="w-full text-left border-collapse text-[11px]">
+                                <thead id="mirrorTableHead" class="bg-slate-900 text-white sticky top-0"></thead>
+                                <tbody id="mirrorTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+                <span class="text-[11px] text-slate-500">Pengaturan tersimpan otomatis di browser ini</span>
+                <button onclick="closeAdminSettingsModal()" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+                    Selesai & Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT ENGINE: CLEAN FINANCIAL UI + DIRECT MULTI-TAB GOOGLE SHEET     -->
+    <!-- ========================================================================= -->
+    <script>
+        // 1. PERMANENT EMBEDDED GOOGLE SHEET DATABASE (READY FOR VALIDATION DEPLOYMENT)
+        const DEFAULT_SHEET_ID = '1E55d3rR5St5h2qPowiJzQM9zWxYb4jX7Hw5_lAStLKA';
+        const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1E55d3rR5St5h2qPowiJzQM9zWxYb4jX7Hw5_lAStLKA/edit?usp=sharing';
+
+        // FALLBACK INITIAL DATA (MATCHES CURRENT NOVEMBER 2026 SHEET STATE BEFORE 0.2s LIVE RESPONSE)
+        // Saldo Jamsos: Rp 3.787.000 | Saldo Sampah: Rp 3.000.000 | Total Kas: Rp 6.787.000 | Partisipasi: 66,7% (124/186 KK)
+        const DEFAULT_BUKU_KAS = [
+            { id: 'TRX-001', tanggal: '2026-11-01', program: 'Jamsos', jenis: 'Masuk', pos: 'Saldo Awal Kas', uraian: 'Saldo awal berjalan Kas Jaminan Sosial RT 02 bulan sebelumnya', nominal: 3200000, pic: 'Bendahara RT', bukti: 'BKM-2611-01', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-002', tanggal: '2026-11-01', program: 'Sampah', jenis: 'Masuk', pos: 'Saldo Awal Kas', uraian: 'Saldo awal berjalan Kas Operasional Sampah RT 02', nominal: 3000000, pic: 'Bendahara RT', bukti: 'BKM-2611-02', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-003', tanggal: '2026-11-03', program: 'Jamsos', jenis: 'Masuk', pos: 'Iuran Jamsos Warga', uraian: 'Kolektif iuran Jamsos warga RT 02 (124 KK aktif @Rp13.000)', nominal: 1612000, pic: 'Kolektor RT', bukti: 'BKM-2611-03', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-004', tanggal: '2026-11-04', program: 'Sampah', jenis: 'Masuk', pos: 'Iuran Sampah Warga & Usaha', uraian: 'Kolektif iuran sampah rumah tangga & unit kosan/usaha satu pintu', nominal: 6450000, pic: 'Pengurus Sampah', bukti: 'BKM-2611-04', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-005', tanggal: '2026-11-05', program: 'Sampah', jenis: 'Keluar', pos: 'Cicilan Mobil Operasional', uraian: 'Pembayaran cicilan bulanan armada mobil angkut sampah RT 02', nominal: 3000000, pic: 'Ketua RT', bukti: 'BKK-2611-05', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-006', tanggal: '2026-11-08', program: 'Sampah', jenis: 'Keluar', pos: 'Setoran Pihak LDH', uraian: 'Setoran rutin pengelolaan lingkungan & kebersihan ke pihak LDH', nominal: 2250000, pic: 'Pengurus Sampah', bukti: 'BKK-2611-06', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-007', tanggal: '2026-11-10', program: 'Jamsos', jenis: 'Keluar', pos: 'Santunan Kematian', uraian: 'Penyaluran santunan duka cita warga RT 02 sesuai pagu Jamsos', nominal: 500000, pic: 'Seksi Sosial', bukti: 'BKK-2611-07', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-008', tanggal: '2026-11-12', program: 'Sampah', jenis: 'Keluar', pos: 'Pembuangan ke Motah', uraian: 'Biaya operasional pembuangan sampah ke Motah (4 ritase @Rp150.000)', nominal: 600000, pic: 'Pengurus Sampah', bukti: 'BKK-2611-08', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-009', tanggal: '2026-11-14', program: 'Jamsos', jenis: 'Keluar', pos: 'Santunan Sakit & Melahirkan', uraian: 'Santunan rawat inap warga (Rp100.000) & santunan kelahiran (Rp125.000)', nominal: 225000, pic: 'Seksi Sosial', bukti: 'BKK-2611-09', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-010', tanggal: '2026-11-18', program: 'Sampah', jenis: 'Keluar', pos: 'Operasional & BBM Armada', uraian: 'Biaya BBM, oli & perawatan berkala armada pengangkut sampah', nominal: 600000, pic: 'Pengurus Sampah', bukti: 'BKK-2611-10', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-011', tanggal: '2026-11-22', program: 'Jamsos', jenis: 'Keluar', pos: 'Insentif Pengurus Inti RT', uraian: 'Insentif operasional Ketua RT, Sekretaris & Bendahara (@Rp100.000)', nominal: 300000, pic: 'Bendahara RT', bukti: 'BKK-2611-11', notaUrl: '', statusVerifikasi: 'Terverifikasi' },
+            { id: 'TRX-012', tanggal: '2026-11-25', program: 'Sampah', jenis: 'Masuk', pos: 'Iuran Tambahan / Subsidi', uraian: 'Penerimaan tercatat di Buku Kas RT 02 terverifikasi bendahara', nominal: 0, pic: 'Bendahara RT', bukti: 'BKM-2611-12', notaUrl: '', statusVerifikasi: 'Terverifikasi' }
+        ].filter(t => t.nominal > 0);
+
+        // APPLICATION STATE
+        let sheetTransactions = JSON.parse(JSON.stringify(DEFAULT_BUKU_KAS));
+        let localAddedTransactions = [];
+        let bukuKas = [];
+        let sheetKpiOverrides = {
+            partisipasiText: 'Partisipasi Warga: 66,7% (124 dari 186 KK)'
+        };
+
+        // Unified Filter Chip: 'ALL' | 'Jamsos' | 'Sampah' | 'Masuk' | 'Keluar'
+        let activeChipFilter = 'ALL';
+        let activeViewMode = 'list'; // 'list' | 'table'
+        let currentSelectedTxId = null;
+
+        let loadedRawSheets = {
+            'Buku_Kas': DEFAULT_BUKU_KAS.map(t => [t.id, t.tanggal, t.program, t.jenis, t.pos, t.uraian, t.nominal, t.pic, t.bukti, t.notaUrl, t.statusVerifikasi])
+        };
+        let currentMirrorTabName = 'Buku_Kas';
+
+        // =========================================================================
+        // 2. FORMATTING & UTILITY HELPERS
+        // =========================================================================
+        function parseCleanNumber(val) {
+            if (typeof val === 'number') return Math.round(val);
+            if (val === null || val === undefined) return 0;
+            let str = String(val).trim();
+            if (!str) return 0;
+            const isNegative = str.startsWith('-') || (str.startsWith('(') && str.endsWith(')'));
+            str = str.replace(/Rp/gi, '').replace(/\s+/g, '');
+            if (/^\d{1,3}(\.\d{3})+(\,\d+)?$/.test(str)) {
+                str = str.replace(/\./g, '').replace(',', '.');
+            } else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(str)) {
+                str = str.replace(/,/g, '');
+            } else {
+                str = str.replace(/\./g, '').replace(/,/g, '.');
+            }
+            str = str.replace(/[^0-9.]/g, '');
+            const num = parseFloat(str);
+            if (isNaN(num)) return 0;
+            return isNegative ? -Math.round(num) : Math.round(num);
+        }
+
+        function formatRupiah(num) {
+            const n = Math.round(Number(num) || 0);
+            const absVal = Math.abs(n);
+            const formatted = 'Rp ' + absVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return n < 0 ? '-' + formatted : formatted;
+        }
+
+        function formatReadableDate(dateStr) {
+            if (!dateStr) return '-';
+            const clean = String(dateStr).trim();
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            // Match YYYY-MM-DD
+            const m1 = clean.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+            if (m1) {
+                const year = m1[1];
+                const monthIdx = parseInt(m1[2], 10) - 1;
+                const day = parseInt(m1[3], 10);
+                if (monthIdx >= 0 && monthIdx < 12) {
+                    return `${day} ${months[monthIdx]} ${year}`;
+                }
+            }
+            // Match DD/MM/YYYY or DD-MM-YYYY
+            const m2 = clean.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+            if (m2) {
+                const day = parseInt(m2[1], 10);
+                const monthIdx = parseInt(m2[2], 10) - 1;
+                const year = m2[3];
+                if (monthIdx >= 0 && monthIdx < 12) {
+                    return `${day} ${months[monthIdx]} ${year}`;
+                }
+            }
+            return clean;
+        }
+
+        function formatNominalInput(inputEl) {
+            const digits = inputEl.value.replace(/[^0-9]/g, '');
+            if (!digits) {
+                inputEl.value = '';
+                return;
+            }
+            inputEl.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function showToast(msg, isSuccess = true) {
+            const toast = document.getElementById('toastNotification');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastMessage');
+            icon.className = isSuccess
+                ? 'fa-solid fa-circle-check text-emerald-400 text-base'
+                : 'fa-solid fa-circle-exclamation text-amber-400 text-base';
+            text.textContent = msg;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3500);
+        }
+
+        function copyTextToClipboard(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('Baris transaksi disalin! Tinggal tempel (Ctrl+V) di tab Buku_Kas Google Sheet.');
+            } catch (e) {
+                showToast('Gagal menyalin teks.', false);
+            }
+            document.body.removeChild(ta);
+        }
+
+        function rebuildCombinedBukuKas() {
+            const existingIds = new Set(sheetTransactions.map(t => t.id));
+            const uniqueLocals = localAddedTransactions.filter(t => !existingIds.has(t.id));
+            bukuKas = [...sheetTransactions, ...uniqueLocals];
+        }
+
+        // =========================================================================
+        // 3. LIVE SALDO & BUKU KAS RENDERING ENGINE (ACCURATE ROW CALCULATION)
+        // =========================================================================
+        function recalculateAndRenderAll() {
+            rebuildCombinedBukuKas();
+
+            let masukJamsos = 0;
+            let keluarJamsos = 0;
+            let masukSampah = 0;
+            let keluarSampah = 0;
+
+            let runningTotal = 0;
+            let runningJamsos = 0;
+            let runningSampah = 0;
+
+            bukuKas.forEach(tx => {
+                const prog = (tx.program || '').toLowerCase();
+                const isMasuk = (tx.jenis || '').toLowerCase().includes('masuk');
+                const nom = parseCleanNumber(tx.nominal);
+
+                if (prog.includes('jamsos')) {
+                    if (isMasuk) {
+                        masukJamsos += nom;
+                        runningJamsos += nom;
+                        runningTotal += nom;
+                    } else {
+                        keluarJamsos += nom;
+                        runningJamsos -= nom;
+                        runningTotal -= nom;
+                    }
+                    tx._runningProgramBalance = runningJamsos;
+                } else {
+                    if (isMasuk) {
+                        masukSampah += nom;
+                        runningSampah += nom;
+                        runningTotal += nom;
+                    } else {
+                        keluarSampah += nom;
+                        runningSampah -= nom;
+                        runningTotal -= nom;
+                    }
+                    tx._runningProgramBalance = runningSampah;
+                }
+                tx._runningTotalBalance = runningTotal;
+            });
+
+            // Only use dashboard overrides if Buku_Kas had 0 rows
+            if (bukuKas.length === 0) {
+                if (sheetKpiOverrides.masukJamsos !== undefined) masukJamsos = sheetKpiOverrides.masukJamsos;
+                if (sheetKpiOverrides.keluarJamsos !== undefined) keluarJamsos = sheetKpiOverrides.keluarJamsos;
+                if (sheetKpiOverrides.masukSampah !== undefined) masukSampah = sheetKpiOverrides.masukSampah;
+                if (sheetKpiOverrides.keluarSampah !== undefined) keluarSampah = sheetKpiOverrides.keluarSampah;
+            }
+
+            const saldoJamsos = (bukuKas.length === 0 && sheetKpiOverrides.saldoJamsos !== undefined)
+                ? sheetKpiOverrides.saldoJamsos
+                : (masukJamsos - keluarJamsos);
+            const saldoSampah = (bukuKas.length === 0 && sheetKpiOverrides.saldoSampah !== undefined)
+                ? sheetKpiOverrides.saldoSampah
+                : (masukSampah - keluarSampah);
+            const totalKonsolidasi = saldoJamsos + saldoSampah;
+
+            const totalMasukAll = masukJamsos + masukSampah;
+            const totalKeluarAll = keluarJamsos + keluarSampah;
+
+            // Update Hero & Program Cards
+            document.getElementById('kpiTotalKonsolidasi').textContent = formatRupiah(totalKonsolidasi);
+            document.getElementById('kpiTotalMasukAll').textContent = formatRupiah(totalMasukAll);
+            document.getElementById('kpiTotalKeluarAll').textContent = formatRupiah(totalKeluarAll);
+
+            if (sheetKpiOverrides.partisipasiText) {
+                document.getElementById('kpiPartisipasiWarga').textContent = sheetKpiOverrides.partisipasiText;
+            }
+
+            const rasioSurplus = totalMasukAll > 0
+                ? ((totalKonsolidasi / totalMasukAll) * 100).toFixed(1).replace('.', ',') + '% Surplus'
+                : '100% Aman';
+            const rasioEl = document.getElementById('kpiRasioKecukupan');
+            if (rasioEl) rasioEl.textContent = rasioSurplus;
+
+            document.getElementById('kpiSaldoJamsos').textContent = formatRupiah(saldoJamsos);
+            document.getElementById('kpiMasukJamsos').textContent = '+ ' + formatRupiah(masukJamsos);
+            document.getElementById('kpiKeluarJamsos').textContent = '- ' + formatRupiah(keluarJamsos);
+
+            document.getElementById('kpiSaldoSampah').textContent = formatRupiah(saldoSampah);
+            document.getElementById('kpiMasukSampah').textContent = '+ ' + formatRupiah(masukSampah);
+            document.getElementById('kpiKeluarSampah').textContent = '- ' + formatRupiah(keluarSampah);
+
+            // Proportion Bar
+            const posTotal = Math.max(1, Math.max(0, saldoJamsos) + Math.max(0, saldoSampah));
+            const jPct = Math.round((Math.max(0, saldoJamsos) / posTotal) * 100);
+            const sPct = 100 - jPct;
+            document.getElementById('propJamsosPct').textContent = jPct + '%';
+            document.getElementById('propSampahPct').textContent = sPct + '%';
+            document.getElementById('propJamsosBar').style.width = jPct + '%';
+            document.getElementById('propSampahBar').style.width = sPct + '%';
+
+            document.getElementById('badgeTotalTxCount').textContent = `${bukuKas.length} Transaksi`;
+
+            renderBukuKas();
+        }
+
+        function setQuickChipFilter(chip) {
+            activeChipFilter = chip;
+            const chips = [
+                { id: 'ALL', label: 'Semua Mutasi', iconHtml: '' },
+                { id: 'Jamsos', label: 'Kas Jamsos', iconHtml: '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' },
+                { id: 'Sampah', label: 'Kas Sampah', iconHtml: '<span class="w-2 h-2 rounded-full bg-sky-500"></span>' },
+                { id: 'Masuk', label: 'Uang Masuk', iconHtml: '<i class="fa-solid fa-arrow-down text-[10px] text-emerald-600"></i>' },
+                { id: 'Keluar', label: 'Uang Keluar', iconHtml: '<i class="fa-solid fa-arrow-up text-[10px] text-rose-600"></i>' }
+            ];
+
+            chips.forEach(c => {
+                const btn = document.getElementById('chipFilter-' + c.id);
+                if (!btn) return;
+                if (c.id === chip) {
+                    btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-sm transition whitespace-nowrap flex items-center gap-1.5';
+                } else {
+                    btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition whitespace-nowrap flex items-center gap-1.5';
+                }
+                btn.innerHTML = `${c.iconHtml}<span>${c.label}</span>`;
+            });
+            renderBukuKas();
+        }
+
+        function setBukuKasViewMode(mode) {
+            activeViewMode = mode;
+            const listEl = document.getElementById('bukuKasListView');
+            const tableEl = document.getElementById('bukuKasTableView');
+            const btnList = document.getElementById('btnViewList');
+            const btnTable = document.getElementById('btnViewTable');
+
+            if (mode === 'list') {
+                listEl.classList.remove('hidden');
+                tableEl.classList.add('hidden');
+                btnList.className = 'px-2.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center gap-1.5';
+                btnTable.className = 'px-2.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5';
+            } else {
+                listEl.classList.add('hidden');
+                tableEl.classList.remove('hidden');
+                btnTable.className = 'px-2.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center gap-1.5';
+                btnList.className = 'px-2.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5';
+            }
+        }
+
+        function clearSearchBukuKas() {
+            document.getElementById('searchBukuKas').value = '';
+            renderBukuKas();
+        }
+
+        function renderBukuKas() {
+            const q = document.getElementById('searchBukuKas').value.toLowerCase().trim();
+            const clearBtn = document.getElementById('btnClearSearch');
+            if (q) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+
+            const filtered = bukuKas.filter(t => {
+                let matchChip = true;
+                if (activeChipFilter === 'Jamsos' || activeChipFilter === 'Sampah') {
+                    matchChip = (t.program || '').toLowerCase() === activeChipFilter.toLowerCase();
+                } else if (activeChipFilter === 'Masuk' || activeChipFilter === 'Keluar') {
+                    matchChip = (t.jenis || '').toLowerCase().includes(activeChipFilter.toLowerCase());
+                }
+
+                const matchQ = !q ||
+                    (t.id || '').toLowerCase().includes(q) ||
+                    (t.pos || '').toLowerCase().includes(q) ||
+                    (t.uraian || '').toLowerCase().includes(q) ||
+                    (t.pic || '').toLowerCase().includes(q) ||
+                    (t.bukti || '').toLowerCase().includes(q) ||
+                    (t.tanggal || '').toLowerCase().includes(q);
+                return matchChip && matchQ;
+            });
+
+            let sumMasuk = 0;
+            let sumKeluar = 0;
+            filtered.forEach(t => {
+                if ((t.jenis || '').toLowerCase().includes('masuk')) sumMasuk += parseCleanNumber(t.nominal);
+                else sumKeluar += parseCleanNumber(t.nominal);
+            });
+
+            document.getElementById('filteredCountText').textContent = `Menampilkan ${filtered.length} dari ${bukuKas.length} transaksi`;
+            document.getElementById('filteredMasukSum').textContent = '+ ' + formatRupiah(sumMasuk);
+            document.getElementById('filteredKeluarSum').textContent = '- ' + formatRupiah(sumKeluar);
+            document.getElementById('filteredNetSum').textContent = formatRupiah(sumMasuk - sumKeluar);
+
+            // Display newest transactions on top for intuitive banking mutation experience
+            const displayList = [...filtered].reverse();
+
+            const listContainer = document.getElementById('bukuKasListView');
+            const tableBody = document.getElementById('bukuKasTableBody');
+
+            if (displayList.length === 0) {
+                const emptyHtml = `
+                    <div class="py-12 px-4 text-center">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-receipt text-lg"></i>
+                        </div>
+                        <div class="text-sm font-bold text-slate-700">Tidak ada transaksi ditemukan</div>
+                        <p class="text-xs text-slate-400 mt-1">Coba ubah filter mutasi atau kata kunci pencarian di atas.</p>
+                    </div>
+                `;
+                listContainer.innerHTML = emptyHtml;
+                tableBody.innerHTML = `<tr><td colspan="5">${emptyHtml}</td></tr>`;
+                return;
+            }
+
+            const isProgramSpecific = activeChipFilter === 'Jamsos' || activeChipFilter === 'Sampah';
+
+            // RENDER 1: MODERN BANKING MUTATION LIST
+            listContainer.innerHTML = displayList.map(t => {
+                const isMasuk = (t.jenis || '').toLowerCase().includes('masuk');
+                const isJamsos = (t.program || '').toLowerCase().includes('jamsos');
+                const runningBal = isProgramSpecific ? t._runningProgramBalance : t._runningTotalBalance;
+
+                const iconBox = isMasuk
+                    ? `<div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+                           <i class="fa-solid fa-arrow-down text-sm"></i>
+                       </div>`
+                    : `<div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center shrink-0">
+                           <i class="fa-solid fa-arrow-up text-sm"></i>
+                       </div>`;
+
+                const progPill = isJamsos
+                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">Jamsos</span>`
+                    : `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200/80">Sampah</span>`;
+
+                const localBadge = t.isLocal
+                    ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Simulasi Lokal</span>`
+                    : '';
+
+                return `
+                    <div onclick="openVoucherModal('${t.id}')" class="p-4 sm:px-6 hover:bg-slate-50/90 transition cursor-pointer flex items-center justify-between gap-3 sm:gap-4">
+                        <div class="flex items-start sm:items-center gap-3.5 min-w-0">
+                            ${iconBox}
+                            <div class="min-w-0">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span class="text-xs sm:text-sm font-bold text-slate-900 leading-snug">${t.uraian}</span>
+                                    ${localBadge}
+                                </div>
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-slate-500 mt-1">
+                                    <span class="font-medium text-slate-600">${formatReadableDate(t.tanggal)}</span>
+                                    <span>•</span>
+                                    ${progPill}
+                                    <span>•</span>
+                                    <span class="font-medium text-slate-700">${t.pos}</span>
+                                    <span class="hidden sm:inline text-slate-300">•</span>
+                                    <span class="hidden sm:inline text-slate-500">PIC: ${t.pic}</span>
+                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 font-mono text-[10px] border border-slate-200/80">
+                                        <i class="fa-solid fa-receipt text-[9px] text-emerald-600"></i>
+                                        <span>${t.bukti}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right shrink-0">
+                            <div class="text-xs sm:text-sm font-extrabold ${isMasuk ? 'text-emerald-600' : 'text-rose-600'}">
+                                ${isMasuk ? '+' : '-'} ${formatRupiah(t.nominal)}
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5 font-medium">
+                                Saldo: ${formatRupiah(runningBal)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // RENDER 2: CLEAN TABLE
+            tableBody.innerHTML = displayList.map(t => {
+                const isMasuk = (t.jenis || '').toLowerCase().includes('masuk');
+                const isJamsos = (t.program || '').toLowerCase().includes('jamsos');
+                const runningBal = isProgramSpecific ? t._runningProgramBalance : t._runningTotalBalance;
+
+                return `
+                    <tr onclick="openVoucherModal('${t.id}')" class="hover:bg-slate-50 transition cursor-pointer">
+                        <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                            <div class="font-bold text-slate-800 text-xs">${formatReadableDate(t.tanggal)}</div>
+                            <div class="text-[10px] font-mono text-slate-400">${t.id}</div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-slate-900">${t.uraian}</div>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-0.5 text-[11px] text-slate-500">
+                                <span class="font-semibold ${isJamsos ? 'text-emerald-700' : 'text-sky-700'}">${t.program}</span>
+                                <span>•</span>
+                                <span>${t.pos}</span>
+                                <span>•</span>
+                                <span>PIC: ${t.pic}</span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 font-mono text-xs font-semibold border border-slate-200">
+                                ${t.bukti}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap font-extrabold ${isMasuk ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${isMasuk ? '+' : '-'} ${formatRupiah(t.nominal)}
+                        </td>
+                        <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap font-bold text-slate-700">
+                            ${formatRupiah(runningBal)}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =========================================================================
+        // 4. RECORD NEW TRANSACTION & VOUCHER DETAIL MODAL
+        // =========================================================================
+        function selectNewTxJenis(jenis) {
+            document.getElementById('newTxJenis').value = jenis;
+            const btnMasuk = document.getElementById('btnSelectMasuk');
+            const btnKeluar = document.getElementById('btnSelectKeluar');
+
+            if (jenis === 'Masuk') {
+                btnMasuk.className = 'py-2.5 px-3 rounded-xl font-bold border-2 border-emerald-600 bg-emerald-50 text-emerald-800 flex items-center justify-center gap-2 transition';
+                btnKeluar.className = 'py-2.5 px-3 rounded-xl font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition';
+            } else {
+                btnKeluar.className = 'py-2.5 px-3 rounded-xl font-bold border-2 border-rose-600 bg-rose-50 text-rose-800 flex items-center justify-center gap-2 transition';
+                btnMasuk.className = 'py-2.5 px-3 rounded-xl font-bold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-2 transition';
+            }
+        }
+
+        function openAddTransactionModal() {
+            const nextNum = bukuKas.length + 1;
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('newTxTanggal').value = today;
+            document.getElementById('newTxBukti').value = `BKM-2611-${String(nextNum).padStart(2, '0')}`;
+            document.getElementById('newTxNominalDisplay').value = '';
+            document.getElementById('newTxUraian').value = '';
+            document.getElementById('newTxPos').value = '';
+            selectNewTxJenis('Masuk');
+
+            const m = document.getElementById('addTxModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+            setTimeout(() => document.getElementById('newTxNominalDisplay').focus(), 100);
+        }
+
+        function closeAddTransactionModal() {
+            const m = document.getElementById('addTxModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function handleAddTransaction(e) {
+            e.preventDefault();
+            const jenis = document.getElementById('newTxJenis').value;
+            const program = document.getElementById('newTxProgram').value;
+            const tanggal = document.getElementById('newTxTanggal').value;
+            const nominal = parseCleanNumber(document.getElementById('newTxNominalDisplay').value);
+            const uraian = document.getElementById('newTxUraian').value.trim();
+            const pos = document.getElementById('newTxPos').value.trim() || program;
+            const pic = document.getElementById('newTxPIC').value.trim() || 'Bendahara RT';
+            const bukti = document.getElementById('newTxBukti').value.trim();
+
+            if (nominal <= 0) {
+                showToast('Masukkan nominal transaksi yang valid.', false);
+                return;
+            }
+
+            const newId = 'TRX-' + String(bukuKas.length + 1).padStart(3, '0');
+            const newTx = {
+                id: newId,
+                tanggal,
+                program,
+                jenis,
+                pos,
+                uraian,
+                nominal,
+                pic,
+                bukti,
+                notaUrl: '',
+                statusVerifikasi: 'Terverifikasi (Baru)',
+                isLocal: true
+            };
+
+            localAddedTransactions.push(newTx);
+            localStorage.setItem('isola_rt02_local_tx_v4', JSON.stringify(localAddedTransactions));
+
+            closeAddTransactionModal();
+            recalculateAndRenderAll();
+
+            // Copy TSV automatically so user can also paste into Google Sheet if desired
+            const tsvRow = [
+                newTx.id,
+                newTx.tanggal,
+                newTx.program,
+                newTx.jenis,
+                newTx.pos,
+                newTx.uraian,
+                newTx.nominal,
+                newTx.pic,
+                newTx.bukti,
+                'https://drive.google.com/drive/folders/nota-rt02',
+                'Terverifikasi'
+            ].join('\t');
+            copyTextToClipboard(tsvRow);
+
+            const hero = document.getElementById('heroBalanceCard');
+            hero.classList.remove('flash-update');
+            void hero.offsetWidth;
+            hero.classList.add('flash-update');
+
+            showToast(`Transaksi ${newId} (${formatRupiah(nominal)}) dicatat & baris disalin untuk Google Sheet!`);
+        }
+
+        function openVoucherModal(txId) {
+            const tx = bukuKas.find(t => t.id === txId);
+            if (!tx) return;
+            currentSelectedTxId = tx.id;
+            const isMasuk = (tx.jenis || '').toLowerCase().includes('masuk');
+            const hasNotaLink = tx.notaUrl && tx.notaUrl.startsWith('http');
+
+            document.getElementById('modalVoucherTitle').textContent = `Bukti Transaksi #${tx.bukti}`;
+            document.getElementById('modalVoucherBody').innerHTML = `
+                <div class="p-4 rounded-2xl ${isMasuk ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200'} flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase ${isMasuk ? 'text-emerald-700' : 'text-rose-700'}">
+                            ${isMasuk ? 'Uang Masuk (+)' : 'Uang Keluar (-)'} • Kas ${tx.program}
+                        </span>
+                        <div class="text-2xl font-extrabold ${isMasuk ? 'text-emerald-700' : 'text-rose-600'} mt-0.5">
+                            ${isMasuk ? '+' : '-'} ${formatRupiah(tx.nominal)}
+                        </div>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-white/80 flex items-center justify-center ${isMasuk ? 'text-emerald-600' : 'text-rose-600'} shadow-sm">
+                        <i class="fa-solid fa-receipt text-lg"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-2.5 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                    <div>
+                        <span class="text-slate-400 block text-[11px]">Uraian Transaksi</span>
+                        <strong class="text-slate-900 text-sm">${tx.uraian}</strong>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5 pt-2 border-t border-slate-200/70">
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">ID & Tanggal</span>
+                            <strong class="text-slate-800">${tx.id} • ${formatReadableDate(tx.tanggal)}</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">Pos Anggaran</span>
+                            <strong class="text-slate-800">${tx.pos}</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">PIC / Petugas</span>
+                            <strong class="text-slate-800">${tx.pic}</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">No. Bukti & Status</span>
+                            <strong class="text-slate-800 font-mono">${tx.bukti}</strong>
+                            <span class="block text-[10px] font-bold text-emerald-700">${tx.statusVerifikasi || 'Terverifikasi'}</span>
+                        </div>
+                    </div>
+                    ${hasNotaLink ? `
+                    <div class="pt-2 border-t border-slate-200/70">
+                        <a href="${tx.notaUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-bold text-xs underline">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            <span>Buka Lampiran Bukti Nota Digital</span>
+                        </a>
+                    </div>` : ''}
+                </div>
+            `;
+
+            const leftActions = document.getElementById('modalVoucherLeftActions');
+            if (tx.isLocal) {
+                leftActions.innerHTML = `
+                    <button onclick="deleteLocalTransaction('${tx.id}')" class="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Hapus Simulasi</span>
+                    </button>
+                `;
+            } else {
+                leftActions.innerHTML = `<span class="text-[11px] text-emerald-700 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i>${tx.statusVerifikasi || 'Terverifikasi Sheet'}</span>`;
+            }
+
+            const m = document.getElementById('voucherModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeVoucherModal() {
+            const m = document.getElementById('voucherModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function copyTransactionRowForSheet() {
+            const tx = bukuKas.find(t => t.id === currentSelectedTxId);
+            if (!tx) return;
+            const tsvRow = [
+                tx.id,
+                tx.tanggal,
+                tx.program,
+                tx.jenis,
+                tx.pos,
+                tx.uraian,
+                tx.nominal,
+                tx.pic,
+                tx.bukti,
+                tx.notaUrl || 'https://drive.google.com/drive/folders/nota-rt02',
+                tx.statusVerifikasi || 'Terverifikasi'
+            ].join('\t');
+            copyTextToClipboard(tsvRow);
+        }
+
+        function deleteLocalTransaction(txId) {
+            localAddedTransactions = localAddedTransactions.filter(t => t.id !== txId);
+            localStorage.setItem('isola_rt02_local_tx_v4', JSON.stringify(localAddedTransactions));
+            closeVoucherModal();
+            recalculateAndRenderAll();
+            showToast(`Transaksi simulasi ${txId} telah dihapus.`);
+        }
+
+        function exportBukuKasCSV() {
+            const headers = ['ID_Transaksi,Tanggal,Program,Jenis,Pos_Anggaran,Uraian,Nominal,PIC,No_Bukti,Link_Bukti_Nota,Status_Verifikasi'];
+            const rows = bukuKas.map(t =>
+                `${t.id},${t.tanggal},"${t.program}",${t.jenis},"${t.pos}","${(t.uraian || '').replace(/"/g, '""')}",${t.nominal},"${t.pic}","${t.bukti}","${t.notaUrl || ''}","${t.statusVerifikasi || 'Terverifikasi'}"`
+            );
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
+            const link = document.createElement('a');
+            link.setAttribute('href', encodeURI(csvContent));
+            link.setAttribute('download', 'Buku_Kas_RT02_RW06_Isola.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // =========================================================================
+        // 5. ADMIN SETTINGS MODAL & MULTI-TAB GOOGLE SHEET JSONP ENGINE
+        // =========================================================================
+        function openAdminSettingsModal() {
+            renderMirrorTable();
+            const m = document.getElementById('adminSettingsModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeAdminSettingsModal() {
+            const m = document.getElementById('adminSettingsModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function toggleManualPasteArea() {
+            const el = document.getElementById('manualPasteContainer');
+            el.classList.toggle('hidden');
+            if (!el.classList.contains('hidden')) {
+                document.getElementById('directPasteTextarea').focus();
+            }
+        }
+
+        function appendDiagLog(msg, type = 'info') {
+            const box = document.getElementById('diagnosticLogBox');
+            if (!box) return;
+            const colors = {
+                info: 'text-slate-300',
+                success: 'text-emerald-400 font-bold',
+                warn: 'text-amber-300',
+                error: 'text-rose-400 font-bold'
+            };
+            const time = new Date().toLocaleTimeString('id-ID');
+            const div = document.createElement('div');
+            div.className = colors[type] || 'text-slate-300';
+            div.innerHTML = `<span class="text-slate-500">[${time}]</span> ${msg}`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function clearDiagLog() {
+            const box = document.getElementById('diagnosticLogBox');
+            if (box) box.innerHTML = '';
+        }
+
+        function parseGoogleSheetUrl(rawUrl, customTabOrGid = '') {
+            const url = (rawUrl || DEFAULT_SHEET_URL).trim();
+            if (!url) return { type: 'EMPTY' };
+
+            let gid = '';
+            const gidMatch = url.match(/[?&#]gid=([0-9]+)/i);
+            if (gidMatch) gid = gidMatch[1];
+
+            let customGid = '';
+            let customTabName = '';
+            if (customTabOrGid) {
+                const cleanCustom = customTabOrGid.trim();
+                if (cleanCustom.startsWith('gid:')) customGid = cleanCustom.replace('gid:', '');
+                else if (/^\d+$/.test(cleanCustom)) customGid = cleanCustom;
+                else customTabName = cleanCustom;
+            }
+
+            const finalGid = customGid || gid || '0';
+
+            const pubMatch = url.match(/\/spreadsheets\/d\/e\/(2PACX-[a-zA-Z0-9-_]+)/i);
+            if (pubMatch) {
+                const pubId = pubMatch[1];
+                const gidQuery = (customGid || gid) ? `&gid=${customGid || gid}&single=true` : '';
+                const csvUrl = `https://docs.google.com/spreadsheets/d/e/${pubId}/pub?output=csv${gidQuery}`;
+                const htmlUrl = `https://docs.google.com/spreadsheets/d/e/${pubId}/pubhtml${(customGid || gid) ? '?gid=' + (customGid || gid) : ''}`;
+                return {
+                    type: 'PUBLISH_TO_WEB',
+                    pubId,
+                    gid: customGid || gid || '',
+                    csvUrl,
+                    htmlUrl,
+                    label: `Publish-to-Web (2PACX)`
+                };
+            }
+
+            const shareMatch = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]{15,})/i);
+            if (shareMatch && shareMatch[1] !== 'e') {
+                const sheetId = shareMatch[1];
+                const sheetQuery = customTabName
+                    ? `&sheet=${encodeURIComponent(customTabName)}`
+                    : `&gid=${finalGid}`;
+                const gvizCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv${sheetQuery}`;
+                const exportCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${finalGid}`;
+                return {
+                    type: 'SHARE_LINK',
+                    sheetId,
+                    gid: finalGid,
+                    tabName: customTabName,
+                    gvizCsvUrl,
+                    exportCsvUrl,
+                    label: `Database Sheet RT 02 (...${sheetId.slice(-6)})`
+                };
+            }
+
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return { type: 'DIRECT_URL', csvUrl: url, label: 'Direct CSV URL' };
+            }
+
+            return { type: 'INVALID', label: 'Link Tidak Valid' };
+        }
+
+        function inspectUrlRealtime(val) {
+            const badge = document.getElementById('detectedUrlTypeBadge');
+            if (!badge) return;
+            const custom = document.getElementById('customTabOrGidInput').value;
+            const info = parseGoogleSheetUrl(val, custom);
+            if (info.type === 'PUBLISH_TO_WEB' || info.type === 'SHARE_LINK' || info.type === 'DIRECT_URL') {
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40';
+                badge.textContent = info.label;
+            } else {
+                badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-400/40';
+                badge.textContent = 'Format Link Belum Sesuai';
+            }
+        }
+
+        function applyTabPreset(val) {
+            document.getElementById('customTabOrGidInput').value = val;
+            inspectUrlRealtime(document.getElementById('sheetUrlInput').value);
+        }
+
+        function clearUrlInput() {
+            document.getElementById('sheetUrlInput').value = DEFAULT_SHEET_URL;
+            document.getElementById('customTabOrGidInput').value = '';
+            localStorage.setItem('isola_rt02_sheet_url_v4', DEFAULT_SHEET_URL);
+            localStorage.removeItem('isola_rt02_sheet_tab_v4');
+            inspectUrlRealtime(DEFAULT_SHEET_URL);
+            connectAndReadGoogleSheet(false);
+        }
+
+        // LAYER 1: JSONP Google Visualization API (CORS-Free Direct Multi-Tab Reader)
+        function fetchViaGvizJSONP(sheetId, { gid = '0', tabName = '', headers = 1 } = {}) {
+            return new Promise((resolve, reject) => {
+                const cbName = '__gvizCb_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+                const script = document.createElement('script');
+                const timer = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('JSONP Timeout'));
+                }, 6500);
+
+                function cleanup() {
+                    clearTimeout(timer);
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                    try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+                }
+
+                window[cbName] = function(response) {
+                    cleanup();
+                    if (!response || response.status === 'error' || !response.table) {
+                        reject(new Error('Gagal memuat JSONP'));
+                        return;
+                    }
+                    const rows = [];
+                    const colLabels = (response.table.cols || []).map(c => (c && c.label) ? String(c.label).trim() : '');
+                    if (colLabels.some(l => l.length > 0)) rows.push(colLabels);
+                    (response.table.rows || []).forEach(r => {
+                        const rowArr = (r.c || []).map(cell => {
+                            if (!cell) return '';
+                            if (cell.f !== undefined && cell.f !== null && String(cell.f).trim() !== '') return String(cell.f).trim();
+                            if (cell.v !== undefined && cell.v !== null) {
+                                const rawV = String(cell.v).trim();
+                                // Convert Gviz Date(YYYY,M,D) if unformatted
+                                const dm = rawV.match(/^Date\((\d+),(\d+),(\d+)/);
+                                if (dm) {
+                                    const y = dm[1];
+                                    const m = String(parseInt(dm[2], 10) + 1).padStart(2, '0');
+                                    const d = String(parseInt(dm[3], 10)).padStart(2, '0');
+                                    return `${y}-${m}-${d}`;
+                                }
+                                return rawV;
+                            }
+                            return '';
+                        });
+                        if (rowArr.some(c => c !== '')) rows.push(rowArr);
+                    });
+                    resolve(rows);
+                };
+
+                const targetParam = tabName
+                    ? `&sheet=${encodeURIComponent(tabName)}&headers=${headers}`
+                    : `&gid=${encodeURIComponent(gid)}&headers=${headers}`;
+                script.src = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json;responseHandler:${cbName}${targetParam}&_ts=${Date.now()}`;
+                script.onerror = function() {
+                    cleanup();
+                    reject(new Error('Akses JSONP ditolak'));
+                };
+                document.body.appendChild(script);
+            });
+        }
+
+        // LAYER 2: Direct Fetch (credentials: omit)
+        async function fetchTextDirect(url) {
+            const sep = url.includes('?') ? '&' : '?';
+            const bustUrl = `${url}${sep}_ts=${Date.now()}`;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 5500);
+            try {
+                const res = await fetch(bustUrl, {
+                    method: 'GET',
+                    credentials: 'omit',
+                    cache: 'no-store',
+                    redirect: 'follow',
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const text = await res.text();
+                validateNotLoginHtml(text);
+                return text;
+            } catch (err) {
+                clearTimeout(timer);
+                throw err;
+            }
+        }
+
+        // LAYER 3: Multi-CORS Proxy Waterfall
+        async function fetchTextViaCorsProxies(targetUrl) {
+            const bustTarget = targetUrl + (targetUrl.includes('?') ? '&' : '?') + '_ts=' + Date.now();
+            const proxies = [
+                { name: 'CorsProxy.io', build: u => `https://corsproxy.io/?${encodeURIComponent(u)}` },
+                { name: 'AllOrigins Raw', build: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
+                { name: 'CodeTabs Proxy', build: u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}` }
+            ];
+
+            let lastErr = null;
+            for (const p of proxies) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 6500);
+                try {
+                    const res = await fetch(p.build(bustTarget), {
+                        method: 'GET',
+                        credentials: 'omit',
+                        cache: 'no-store',
+                        signal: controller.signal
+                    });
+                    clearTimeout(timer);
+                    if (!res.ok) throw new Error(`${p.name} HTTP ${res.status}`);
+                    const text = await res.text();
+                    validateNotLoginHtml(text);
+                    return text;
+                } catch (err) {
+                    clearTimeout(timer);
+                    lastErr = err;
+                }
+            }
+            throw lastErr || new Error('Semua jalur proxy gagal');
+        }
+
+        function validateNotLoginHtml(text) {
+            if (!text || text.trim().length < 3) throw new Error('Respons kosong');
+            const head = text.trim().substring(0, 300).toLowerCase();
+            if (head.includes('<!doctype html') || head.includes('<html') || head.includes('accounts.google.com/servicelogin')) {
+                throw new Error('Respons berupa halaman HTML Login, bukan CSV');
+            }
+        }
+
+        async function connectAndReadGoogleSheet(isSilent = false) {
+            const inputEl = document.getElementById('sheetUrlInput');
+            const rawUrl = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : DEFAULT_SHEET_URL;
+            const customTabOrGid = document.getElementById('customTabOrGidInput').value.trim();
+            const btnIcon = document.getElementById('connectBtnIcon');
+            const refreshIcon = document.getElementById('refreshIcon');
+
+            if (inputEl && !inputEl.value.trim()) inputEl.value = DEFAULT_SHEET_URL;
+            clearDiagLog();
+            inspectUrlRealtime(rawUrl);
+
+            const parsedUrl = parseGoogleSheetUrl(rawUrl, customTabOrGid);
+            localStorage.setItem('isola_rt02_sheet_url_v4', rawUrl);
+            localStorage.setItem('isola_rt02_sheet_tab_v4', customTabOrGid);
+
+            if (btnIcon) btnIcon.className = 'fa-solid fa-spinner fa-spin';
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+            appendDiagLog(`Menarik data live dari ${parsedUrl.label}...`, 'info');
+
+            try {
+                if (parsedUrl.type === 'SHARE_LINK') {
+                    const fetchedSheets = {};
+
+                    // Explicitly pull Buku_Kas and Rekap_Dashboard in parallel first
+                    const priorityTabs = customTabOrGid
+                        ? [customTabOrGid, 'Buku_Kas', 'Rekap_Dashboard']
+                        : ['Buku_Kas', 'Rekap_Dashboard', 'Buku_Kas_Utama', 'Ringkasan_RealTime'];
+
+                    await Promise.allSettled(priorityTabs.map(async tName => {
+                        if (!tName || fetchedSheets[tName]) return;
+                        try {
+                            const rows = await fetchViaGvizJSONP(parsedUrl.sheetId, { tabName: tName, headers: 1 });
+                            if (rows && rows.length > 0) {
+                                fetchedSheets[tName] = rows;
+                            }
+                        } catch (_) {}
+                    }));
+
+                    // Fallback to gid=0 if named tabs were renamed
+                    if (Object.keys(fetchedSheets).length === 0) {
+                        try {
+                            const gidRows = await fetchViaGvizJSONP(parsedUrl.sheetId, { gid: parsedUrl.gid || '0', headers: 1 });
+                            if (gidRows && gidRows.length > 0) {
+                                fetchedSheets['Sheet_Utama'] = gidRows;
+                            }
+                        } catch (_) {}
+                    }
+
+                    // Fallback to CSV fetch if JSONP blocked
+                    if (Object.keys(fetchedSheets).length === 0) {
+                        let csvText = null;
+                        try {
+                            csvText = await fetchTextDirect(parsedUrl.gvizCsvUrl);
+                        } catch (_) {
+                            csvText = await fetchTextViaCorsProxies(parsedUrl.exportCsvUrl);
+                        }
+                        if (csvText) {
+                            const rows2D = parseDelimitedTextTo2D(csvText);
+                            if (rows2D.length > 0) fetchedSheets['Sheet_CSV'] = rows2D;
+                        }
+                    }
+
+                    if (Object.keys(fetchedSheets).length === 0) {
+                        throw new Error('Tidak dapat membaca tab Google Sheet. Pastikan akses Share disetel ke "Anyone with the link".');
+                    }
+
+                    applyFetchedSheetsToApp(fetchedSheets, 'Live Terhubung ke Google Sheet');
+                    finishSyncUI(isSilent);
+                    return;
+                }
+
+                if (parsedUrl.type === 'PUBLISH_TO_WEB' || parsedUrl.type === 'DIRECT_URL') {
+                    const targetCsv = parsedUrl.csvUrl;
+                    let csvText = null;
+                    try {
+                        csvText = await fetchTextDirect(targetCsv);
+                    } catch (_) {
+                        csvText = await fetchTextViaCorsProxies(targetCsv);
+                    }
+                    const rows2D = parseDelimitedTextTo2D(csvText);
+                    applyFetchedSheetsToApp({ 'Buku_Kas': rows2D }, 'Live Terhubung ke Google Sheet');
+                    finishSyncUI(isSilent);
+                }
+            } catch (err) {
+                if (btnIcon) btnIcon.className = 'fa-solid fa-bolt';
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+                appendDiagLog(`⚠️ Menggunakan data cadangan (${err.message})`, 'warn');
+                if (!isSilent) showToast('Gagal menarik pembaruan Sheet, menampilkan data terakhir.', false);
+            }
+        }
+
+        function finishSyncUI(isSilent) {
+            const btnIcon = document.getElementById('connectBtnIcon');
+            const refreshIcon = document.getElementById('refreshIcon');
+            if (btnIcon) btnIcon.className = 'fa-solid fa-bolt';
+            if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+            document.getElementById('sheetConnectedDot').classList.remove('hidden');
+            if (!isSilent) showToast('Sinkronisasi real-time dengan Google Sheet berhasil!');
+        }
+
+        function triggerSilentOrQuickRefresh() {
+            connectAndReadGoogleSheet(false);
+        }
+
+        // =========================================================================
+        // 6. SMART AUTO-MAPPER FOR BUKU_KAS & REKAP_DASHBOARD
+        // =========================================================================
+        function applyFetchedSheetsToApp(sheetsMap, sourceLabel) {
+            loadedRawSheets = sheetsMap;
+            const sheetNames = Object.keys(sheetsMap);
+            currentMirrorTabName = sheetNames.includes('Buku_Kas') ? 'Buku_Kas' : sheetNames[0];
+
+            let totalRowsRead = 0;
+            let foundTransactions = [];
+
+            // Prioritize Buku_Kas if present
+            const orderedNames = [...sheetNames].sort((a, b) => {
+                if (a === 'Buku_Kas') return -1;
+                if (b === 'Buku_Kas') return 1;
+                return 0;
+            });
+
+            orderedNames.forEach(sName => {
+                const rows = sheetsMap[sName] || [];
+                totalRowsRead += rows.length;
+
+                const kpiHits = scanRowsForKpiValues(rows);
+                Object.assign(sheetKpiOverrides, kpiHits);
+
+                const txList = scanRowsForTransactionsFlexible(rows);
+                if (sName === 'Buku_Kas' && txList.length > 0) {
+                    foundTransactions = txList;
+                } else if (foundTransactions.length === 0 && txList.length > 0) {
+                    foundTransactions = txList;
+                }
+            });
+
+            if (foundTransactions.length > 0) {
+                sheetTransactions = foundTransactions;
+            }
+
+            recalculateAndRenderAll();
+            renderMirrorTable();
+
+            const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('lastSyncTimestamp').textContent = `Sinkron: ${nowStr}`;
+            document.getElementById('lastUpdateLabel').textContent = `Sinkron ${nowStr}`;
+            document.getElementById('headerSyncTime').textContent = `Update ${nowStr}`;
+            document.getElementById('heroSourceStatusText').textContent = sourceLabel;
+            document.getElementById('syncStatusPillText').textContent = `Live Terhubung ke Google Sheet`;
+
+            const hero = document.getElementById('heroBalanceCard');
+            hero.classList.remove('flash-update');
+            void hero.offsetWidth;
+            hero.classList.add('flash-update');
+
+            appendDiagLog(`✓ Berhasil membaca ${sheetTransactions.length} transaksi dari tab Buku_Kas (${totalRowsRead} total baris sheet).`, 'success');
+        }
+
+        function scanRowsForKpiValues(rows) {
+            const hits = {};
+            if (!rows || !rows.length) return hits;
+
+            rows.forEach(row => {
+                const rowJoined = row.join(' ');
+                if (rowJoined.toLowerCase().includes('partisipasi') && rowJoined.includes('%')) {
+                    for (let c = 0; c < row.length; c++) {
+                        const cell = String(row[c] || '').trim();
+                        if (cell.includes('%')) {
+                            hits.partisipasiText = `Partisipasi Warga: ${cell}`;
+                            break;
+                        }
+                    }
+                }
+            });
+            return hits;
+        }
+
+        function scanRowsForTransactionsFlexible(rows) {
+            if (!rows || rows.length < 2) return [];
+            const result = [];
+
+            let headerIdx = -1;
+            let colMap = {
+                id: 0,
+                tanggal: 1,
+                program: 2,
+                jenis: 3,
+                pos: 4,
+                uraian: 5,
+                nominal: 6,
+                pic: 7,
+                bukti: 8,
+                notaUrl: 9,
+                statusVerifikasi: 10,
+                masuk: -1,
+                keluar: -1
+            };
+
+            for (let i = 0; i < Math.min(rows.length, 10); i++) {
+                const r = rows[i].map(x => String(x || '').toLowerCase().trim());
+                const joined = r.join(' | ');
+                if ((joined.includes('tanggal') || joined.includes('tgl') || joined.includes('id_transaksi')) &&
+                    (joined.includes('uraian') || joined.includes('nominal') || joined.includes('program') || joined.includes('pos_anggaran'))) {
+                    headerIdx = i;
+                    r.forEach((colName, idx) => {
+                        if (colName.includes('id_transaksi') || colName === 'id' || colName === 'no' || colName.includes('kode')) colMap.id = idx;
+                        else if (colName.includes('tanggal') || colName.includes('tgl')) colMap.tanggal = idx;
+                        else if (colName.includes('program') || colName.includes('unit') || colName.includes('dana')) colMap.program = idx;
+                        else if (colName.includes('jenis') || colName.includes('tipe') || colName.includes('mutasi')) colMap.jenis = idx;
+                        else if (colName.includes('pos') || colName.includes('kategori')) colMap.pos = idx;
+                        else if (colName.includes('uraian') || colName.includes('deskripsi') || colName.includes('keterangan')) colMap.uraian = idx;
+                        else if (colName.includes('nominal') || colName.includes('jumlah') || colName === 'rp' || colName.includes('biaya')) colMap.nominal = idx;
+                        else if (colName === 'masuk' || colName.includes('kas masuk') || colName.includes('debet')) colMap.masuk = idx;
+                        else if (colName === 'keluar' || colName.includes('kas keluar') || colName.includes('kredit')) colMap.keluar = idx;
+                        else if (colName.includes('pic') || colName.includes('petugas') || colName.includes('penanggung')) colMap.pic = idx;
+                        else if (colName.includes('no_bukti') || colName === 'bukti' || colName.includes('kwitansi')) colMap.bukti = idx;
+                        else if (colName.includes('link_bukti') || colName.includes('nota') || colName.includes('link')) colMap.notaUrl = idx;
+                        else if (colName.includes('status')) colMap.statusVerifikasi = idx;
+                    });
+                    break;
+                }
+            }
+
+            const startRow = headerIdx >= 0 ? headerIdx + 1 : 0;
+
+            for (let i = startRow; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r || r.length < 3) continue;
+
+                const rawId = String(r[colMap.id] || '').trim();
+                const joinedLower = r.join(' ').toLowerCase();
+
+                if (joinedLower.includes('total pemasukan') || joinedLower.includes('total saldo') || joinedLower.includes('id_transaksi')) continue;
+
+                const isTrxId = /^trx[-_0-9]/i.test(rawId) || /^bkm|^bkk/i.test(rawId);
+                const hasProgramKeyword = joinedLower.includes('jamsos') || joinedLower.includes('sampah');
+                const hasDatePattern = /\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/.test(joinedLower);
+
+                if (!isTrxId && !hasProgramKeyword && !(headerIdx >= 0 && hasDatePattern)) continue;
+
+                let nominal = 0;
+                let jenis = String(r[colMap.jenis] || '').trim();
+
+                if (colMap.masuk >= 0 && colMap.keluar >= 0) {
+                    const mVal = parseCleanNumber(r[colMap.masuk]);
+                    const kVal = parseCleanNumber(r[colMap.keluar]);
+                    if (mVal > 0) { nominal = mVal; jenis = 'Masuk'; }
+                    else if (kVal > 0) { nominal = kVal; jenis = 'Keluar'; }
+                } else {
+                    nominal = parseCleanNumber(r[colMap.nominal]);
+                    if (nominal === 0) {
+                        for (let c = 2; c < r.length; c++) {
+                            const candidate = parseCleanNumber(r[c]);
+                            if (candidate >= 1000) {
+                                nominal = candidate;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (nominal <= 0) continue;
+
+                if (!jenis || (!jenis.toLowerCase().includes('masuk') && !jenis.toLowerCase().includes('keluar'))) {
+                    jenis = (joinedLower.includes('keluar') || joinedLower.includes('santunan') || joinedLower.includes('cicilan') || joinedLower.includes('setoran') || joinedLower.includes('biaya') || joinedLower.includes('insentif'))
+                        ? 'Keluar'
+                        : 'Masuk';
+                } else {
+                    jenis = jenis.toLowerCase().includes('keluar') ? 'Keluar' : 'Masuk';
+                }
+
+                let program = String(r[colMap.program] || '').trim();
+                if (!program.toLowerCase().includes('jamsos') && !program.toLowerCase().includes('sampah')) {
+                    program = (joinedLower.includes('sampah') || joinedLower.includes('motah') || joinedLower.includes('ldh') || joinedLower.includes('mobil'))
+                        ? 'Sampah'
+                        : 'Jamsos';
+                } else {
+                    program = program.toLowerCase().includes('sampah') ? 'Sampah' : 'Jamsos';
+                }
+
+                result.push({
+                    id: rawId || `TRX-${String(result.length + 1).padStart(3, '0')}`,
+                    tanggal: String(r[colMap.tanggal] || '2026-11-01').trim(),
+                    program,
+                    jenis,
+                    pos: String(r[colMap.pos] || program).trim(),
+                    uraian: String(r[colMap.uraian] || r[colMap.pos] || '-').trim(),
+                    nominal,
+                    pic: String(r[colMap.pic] || 'Bendahara RT').trim(),
+                    bukti: String(r[colMap.bukti] || `BKM-${String(result.length + 1).padStart(2, '0')}`).trim(),
+                    notaUrl: String(r[colMap.notaUrl] || '').trim(),
+                    statusVerifikasi: String(r[colMap.statusVerifikasi] || 'Terverifikasi').trim()
+                });
+            }
+
+            return result;
+        }
+
+        function parseDelimitedTextTo2D(text) {
+            if (!text) return [];
+            const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+            if (lines.length === 0) return [];
+
+            const sample = lines.slice(0, 5).join('\n');
+            const tabCount = (sample.match(/\t/g) || []).length;
+            const semiCount = (sample.match(/;/g) || []).length;
+            const commaCount = (sample.match(/,/g) || []).length;
+
+            let delimiter = ',';
+            if (tabCount > commaCount && tabCount >= semiCount) delimiter = '\t';
+            else if (semiCount > commaCount) delimiter = ';';
+
+            return lines.map(line => {
+                if (delimiter === '\t') return line.split('\t').map(c => c.trim());
+                const result = [];
+                let cur = '';
+                let inQuotes = false;
+                for (let i = 0; i < line.length; i++) {
+                    const ch = line[i];
+                    if (ch === '"') {
+                        if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+                        else inQuotes = !inQuotes;
+                    } else if (ch === delimiter && !inQuotes) {
+                        result.push(cur.trim());
+                        cur = '';
+                    } else {
+                        cur += ch;
+                    }
+                }
+                result.push(cur.trim());
+                return result;
+            });
+        }
+
+        function processDirectPastedText() {
+            const raw = document.getElementById('directPasteTextarea').value;
+            if (!raw || !raw.trim()) return;
+            const rows2D = parseDelimitedTextTo2D(raw);
+            if (rows2D.length > 0) {
+                applyFetchedSheetsToApp({ 'Data_Paste': rows2D }, 'Paste Manual');
+                showToast('Data tabel berhasil diterapkan ke Buku Kas!');
+            }
+        }
+
+        function handleLocalCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const rows2D = parseDelimitedTextTo2D(e.target.result);
+                if (rows2D.length > 0) {
+                    applyFetchedSheetsToApp({ [file.name]: rows2D }, `CSV (${file.name})`);
+                    showToast(`File ${file.name} berhasil dimuat!`);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function renderMirrorTable() {
+            const tabContainer = document.getElementById('mirrorSheetTabsContainer');
+            if (!tabContainer) return;
+            const names = Object.keys(loadedRawSheets);
+            if (!names.includes(currentMirrorTabName)) currentMirrorTabName = names[0];
+
+            tabContainer.innerHTML = names.map(n => {
+                const active = n === currentMirrorTabName;
+                return `
+                    <button onclick="selectMirrorSheetTab('${n.replace(/'/g, "\\'")}')" type="button" class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${active ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border border-slate-200'}">
+                        ${n} (${(loadedRawSheets[n] || []).length})
+                    </button>
+                `;
+            }).join('');
+
+            const rows = loadedRawSheets[currentMirrorTabName] || [];
+            const maxCols = rows.reduce((max, r) => Math.max(max, r.length), 0);
+            document.getElementById('mirrorDimensionsText').textContent = `${rows.length} Baris × ${maxCols} Kolom`;
+
+            const thead = document.getElementById('mirrorTableHead');
+            const tbody = document.getElementById('mirrorTableBody');
+            if (rows.length === 0) {
+                thead.innerHTML = '';
+                tbody.innerHTML = `<tr><td class="p-4 text-center text-slate-400">Kosong</td></tr>`;
+                return;
+            }
+
+            let hHtml = `<tr><th class="py-1.5 px-2 bg-slate-950 text-slate-400 text-center">#</th>`;
+            for (let c = 0; c < maxCols; c++) {
+                hHtml += `<th class="py-1.5 px-2 text-emerald-300 font-mono">${String.fromCharCode(65 + (c % 26))}</th>`;
+            }
+            hHtml += `</tr>`;
+            thead.innerHTML = hHtml;
+
+            tbody.innerHTML = rows.slice(0, 50).map((r, rIdx) => {
+                let cHtml = `<td class="py-1.5 px-2 text-slate-400 font-mono text-center bg-slate-50">${rIdx + 1}</td>`;
+                for (let c = 0; c < maxCols; c++) {
+                    cHtml += `<td class="py-1.5 px-2 border-r border-slate-100 truncate max-w-[180px]">${r[c] !== undefined ? r[c] : ''}</td>`;
+                }
+                return `<tr>${cHtml}</tr>`;
+            }).join('');
+        }
+
+        function selectMirrorSheetTab(tabName) {
+            currentMirrorTabName = tabName;
+            renderMirrorTable();
+        }
+
+        function resetToDefaultSheetData() {
+            sheetKpiOverrides = {
+                partisipasiText: 'Partisipasi Warga: 66,7% (124 dari 186 KK)'
+            };
+            localAddedTransactions = [];
+            localStorage.removeItem('isola_rt02_local_tx_v4');
+            document.getElementById('sheetUrlInput').value = DEFAULT_SHEET_URL;
+            localStorage.setItem('isola_rt02_sheet_url_v4', DEFAULT_SHEET_URL);
+            connectAndReadGoogleSheet(false);
+        }
+
+        // INITIALIZE ON LOAD — AUTOMATICALLY CONNECTS TO EMBEDDED GOOGLE SHEET
+        window.onload = function() {
+            try {
+                const savedLocal = localStorage.getItem('isola_rt02_local_tx_v4');
+                if (savedLocal) {
+                    localAddedTransactions = JSON.parse(savedLocal) || [];
+                }
+            } catch (e) {
+                localAddedTransactions = [];
+            }
+
+            // Render initial state immediately (0ms) so UI is instant
+            recalculateAndRenderAll();
+
+            // Set embedded Google Sheet URL & pull live rows from Buku_Kas & Rekap_Dashboard automatically
+            const savedUrl = localStorage.getItem('isola_rt02_sheet_url_v4') || DEFAULT_SHEET_URL;
+            const savedTab = localStorage.getItem('isola_rt02_sheet_tab_v4') || '';
+            document.getElementById('sheetUrlInput').value = savedUrl;
+            document.getElementById('customTabOrGidInput').value = savedTab;
+            inspectUrlRealtime(savedUrl);
+
+            // Trigger immediate real-time fetch from Google Sheet
+            connectAndReadGoogleSheet(true);
+        };
+    </script>
+</body>
+</html>
